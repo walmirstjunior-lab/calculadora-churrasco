@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Churrasco</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px 14px;
+  background: #f3f5f7;
+  font-family: Arial, sans-serif;
+  color: #183b32;
+}
+
+main {
+  max-width: 440px;
+  margin: auto;
+  padding: 24px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 5px 24px #00000012;
+}
+
+h1 { text-align: center; font-size: 25px; }
+.subtitulo { text-align: center; color: #606b67; }
+
+label {
+  display: block;
+  margin-top: 16px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid #cbd5d1;
+  border-radius: 8px;
+  font-size: 17px;
+}
+
+button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  border: none;
+  border-radius: 9px;
+  background: #176b45;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#resultados {
+  display: none;
+  margin-top: 24px;
+  padding: 16px;
+  background: #edf7f0;
+  border-radius: 12px;
+}
+
+.resultado {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.valor { font-weight: bold; color: #176b45; }
+.aviso { font-size: 12px; color: #606b67; }
+</style>
+</head>
+
+<body>
+<main>
+  <h1>Calculadora de Churrasco</h1>
+  <p class="subtitulo">Planeje seu churrasco sem desperdício.</p>
+
+  <label for="homens">Homens</label>
+  <input id="homens" type="number" min="0" step="1" value="5">
+
+  <label for="mulheres">Mulheres</label>
+  <input id="mulheres" type="number" min="0" step="1" value="4">
+
+  <label for="criancas">Crianças</label>
+  <input id="criancas" type="number" min="0" step="1" value="2">
+
+  <label for="cerveja">Pessoas que beberão cerveja</label>
+  <input id="cerveja" type="number" min="0" step="1" value="5">
+
+  <label for="horas">Duração do churrasco (horas)</label>
+  <input id="horas" type="number" min="0.1" step="0.5" value="4">
+
+  <button onclick="calcular()">CALCULAR QUANTIDADES</button>
+
+  <section id="resultados" aria-live="polite">
+    <h2>Resultado estimado</h2>
+    <div class="resultado">
+      <span>Total de pessoas</span>
+      <span class="valor" id="total"></span>
+    </div>
+    <div class="resultado">
+      <span>Carne</span>
+      <span class="valor" id="carne"></span>
+    </div>
+    <div class="resultado">
+      <span>Guaraná</span>
+      <span class="valor" id="guarana"></span>
+    </div>
+    <div class="resultado">
+      <span>Cerveja</span>
+      <span class="valor" id="valorCerveja"></span>
+    </div>
+    <p class="aviso">Estimativas de consumo para planejamento.</p>
+  </section>
+</main>
+
+<script>
+function calcular() {
+  const campos = ["homens", "mulheres", "criancas", "cerveja", "horas"];
+  const valores = {};
+
+  
+for (const nome of campos) {
+  const campo = document.getElementById(nome);
+  const numero = Number(campo.value);
+
+  if (
+    campo.value.trim() === "" ||
+    !Number.isFinite(numero) ||
+    numero < 0
+  ) {
+    alert("Confira o campo: " + nome);
+    campo.focus();
+    return;
+  }
+
+  if (nome !== "horas" && !Number.isInteger(numero)) {
+    alert("Informe um número inteiro no campo: " + nome);
+    campo.focus();
+    return;
+  }
+
+  valores[nome] = numero;
+}
+
+
+  const { homens, mulheres, criancas, cerveja, horas } = valores;
+  const adultos = homens + mulheres;
+  const total = adultos + criancas;
+
+  if (cerveja > adultos || horas <= 0 || total === 0) {
+    alert("Confira a quantidade de pessoas e a duração.");
+    return;
+  }
+
+  const carne = (adultos * 0.4 + criancas * 0.2) * horas / 4;
+  const guarana = (total - cerveja) * 0.6 * horas / 4;
+  const litrosCerveja = cerveja * 1.5 * horas / 4;
+
+  const fmt = n => n.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  document.getElementById("total").textContent = total;
+  document.getElementById("carne").textContent = fmt(carne) + " kg";
+  document.getElementById("guarana").textContent = fmt(guarana) + " litros";
+  document.getElementById("valorCerveja").textContent = fmt(litrosCerveja) + " litros";
+  document.getElementById("resultados").style.display = "block";
+}
+</script>
+</body>
+</html>
